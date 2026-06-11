@@ -2,11 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ActivityReportController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DonationController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
 
 Route::resource('donations', DonationController::class);
 Route::resource('activities', ActivityReportController::class);
+
+Route::get('/login', [AuthController::class, 'index'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
