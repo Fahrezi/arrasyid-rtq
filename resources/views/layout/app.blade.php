@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Pliant:ital,wght@0,100..900;1,100..900&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Pliant:ital,wght@0,100..900;1,100..900&display=swap');
     </style>
 
     <title>{{ config('app.name', 'Laravel') }}</title>
@@ -2167,14 +2167,12 @@
     @endif
 </head>
 
-<body class="min-h-screen bg-[#f4fff4] p-6 text-[#1b1b18] lg:justify-center lg:py-8 px-16">
-  <div id="app">
-    @include('shared.header')
-    <div class="container mx-auto">
-        @yield('content')
-    </div>
-    @include('shared.footer')
+<body class="flex flex-col min-h-screen p-6 text-[#1b1b18] lg:justify-center lg:py-8 px-16">
+  @include('shared.header')
+  <div id="app container mx-auto flex-1">
+    @yield('content')
   </div>
+  @include('shared.footer')
 </body>
 
 </html>
