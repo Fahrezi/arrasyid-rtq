@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<html
+  class="scroll-smooth"
+  lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Pliant:ital,wght@0,100..900;1,100..900&display=swap");
+  </style>
+
+  <title>{{ config('app.name', 'Laravel') }}</title>
+
+  @fonts
+
+  <!-- Styles / Scripts -->
+  @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
+    @vite (['resources/css/app.css', 'resources/js/app.js'])
+  @else
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Pliant:ital,wght@0,100..900;1,100..900&display=swap');
-    </style>
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    @fonts
-
-    <!-- Styles / Scripts -->
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
-        <style>
             /*! tailwindcss v4.0.7 | MIT License | https://tailwindcss.com */
             @layer properties {
                 @supports (((-webkit-hyphens:none)) and (not (margin-trim:inline))) or ((-moz-orient:inline) and (not (color:rgb(from red r g b)))) {
@@ -2164,15 +2166,24 @@
                 }
             }
         </style>
-    @endif
+  @endif
 </head>
 
-<body class="flex flex-col min-h-screen p-6 text-[#1b1b18] lg:justify-center lg:py-8 px-16">
-  @include('shared.header')
+<body
+  class="flex flex-col min-h-screen p-6 text-[#1b1b18] lg:justify-center lg:py-8 lg:px-16 overflow-x-hidden"
+>
+  <!--
+  <div
+    class="fixed top-0 right-0 -translate-y-1/4 translate-x-1/4 hidden lg:block lg:w-125 lg:h-125 rounded-full bg-[radial-gradient(circle,rgba(134,239,172,0.35)_0%,transparent_70%)] pointer-events-none z-0"
+  ></div>
+  <div
+    class="fixed bottom-0 left-0 translate-y-1/3 -translate-x-1/3 hidden lg:block w-20 h-20 lg:w-155 lg:h-155 rounded-full bg-[radial-gradient(circle,rgba(74,222,128,0.2)_0%,transparent_70%)] pointer-events-none z-0"
+  ></div>
+  -->
+  @include ('shared.header')
   <div id="app container mx-auto flex-1">
-    @yield('content')
+    @yield ('content')
   </div>
-  @include('shared.footer')
+  @include ('shared.footer')
 </body>
-
 </html>
