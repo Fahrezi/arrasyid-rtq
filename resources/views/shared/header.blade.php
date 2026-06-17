@@ -1,7 +1,7 @@
 <nav class="mb-6 w-full sticky top-8 z-50">
   <div class="max-w-xl mx-auto w-full relative">
     <div
-      class="bg-white rounded-full w-fit absolute -top-4 -translate-x-full -left-2 p-2 hidden sm:block"
+      class="bg-white rounded-full w-fit absolute -top-4 -translate-x-full -left-2 p-2 hidden sm:block shadow-lg shadow-green-300/30"
     >
       <img
         src="{{ asset('images/logo.png') }}"
@@ -12,7 +12,7 @@
 
     {{-- Desktop nav --}}
     <ul
-      class="hidden sm:flex items-center justify-between bg-white px-12 py-4 rounded-full border border-green-500 text-lg font-semibold min-h-12"
+      class="hidden sm:flex items-center justify-between bg-white px-12 py-4 rounded-full border border-green-500 shadow-lg shadow-green-300/30 text-lg font-semibold min-h-12"
     >
       <li class="leading-none">
         <a
@@ -36,13 +36,10 @@
         >
       </li>
       @auth
-        <li>
-          <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="text-[#1b1b18] hover:text-[#1b1b18]">
-              Logout
-            </button>
-          </form>
+        <li class="leading-none">
+          <a href="{{ route('filament.admin.pages.dashboard') }}" class="text-[#1b1b18] hover:text-[#1b1b18] hover:underline">
+            Dashboard
+          </a>
         </li>
       @endauth
     </ul>
@@ -94,15 +91,12 @@
         Donasi
       </a>
       @auth
-        <form action="{{ route('logout') }}" method="POST">
-          @csrf
-          <button
-            type="submit"
-            class="w-full text-left px-6 py-4 text-base font-semibold text-green-900 hover:bg-green-300/30 transition-colors"
-          >
-            Logout
-          </button>
-        </form>
+        <a
+          href="{{ route('filament.admin.pages.dashboard') }}"
+          class="block px-6 py-4 text-base font-semibold text-green-900 hover:bg-green-300/30 transition-colors"
+        >
+          Dashboard
+        </a>
       @endauth
     </div>
   </div>

@@ -6,7 +6,7 @@
       class="flex flex-col items-center text-center justify-center bg-[#f4fff4] bg-[linear-gradient(180deg,#DBFFDB_0%,#F4FFF4_100%)] rounded-2xl border border-green-500 p-6 pt-14 sm:p-12 sm:pt-16 min-h-[30vh] max-sm:max-h-[760px] lg:min-h-[50vh] mt-6 sm:mt-12 relative"
     >
       <span
-        class="absolute inline-block top-0 left-1/2 -translate-x-1/2 bg-green-500 rounded-b-2xl py-2 px-4 sm:py-4 sm:px-8 text-xs sm:text-base md:text-2xl font-josefin-sans font-semibold text-white border-r border-b border-l border-green-500 shadow-lg shadow-green-500/50 uppercase sm:w-auto text-center sm:text-nowrap"
+        class="absolute inline-block top-0 left-1/2 -translate-x-1/2 bg-green-500 rounded-b-2xl py-2 px-4 sm:py-4 sm:px-8 text-xs sm:text-base md:text-2xl font-josefin-sans font-semibold text-white border-r border-b border-l border-green-500 shadow-lg shadow-green-500/50/50 uppercase sm:w-auto text-center sm:text-nowrap"
       >
         Rumah Tahfidz Al-Qur'an Ar-Rasyid Sawah Lunto
       </span>
@@ -45,7 +45,7 @@
             <img
               src="{{ asset('images/about-us/' . $img . '.jpeg') }}"
               alt="{{ $img }}"
-              class="w-full h-56 sm:h-64 object-cover transition-transform duration-300 hover:scale-110"
+              class="w-full h-56 sm:h-64 object-cover transition-transform duration-300 hover:scale-110 shadow-lg shadow-green-500/50"
             />
           </div>
         @endforeach
@@ -55,7 +55,7 @@
         class="flex flex-col lg:flex-row sm:items-center justify-between mb-10 sm:mb-14 gap-6 sm:gap-8"
       >
         <img
-          class="rounded-xl w-full lg:max-w-5/12 h-56 lg:h-auto object-cover"
+          class="rounded-xl w-full lg:max-w-5/12 h-56 lg:h-auto object-cover shadow-lg shadow-green-500/50"
           src="{{ asset('images/about-us/about-us-4.jpeg') }}"
           alt="Tentang Kami"
         />
@@ -120,81 +120,116 @@
       </h2>
 
       <div class="flex flex-col gap-4 sm:gap-6">
-        <div
-          class="flex flex-col sm:flex-row border border-gray-200 rounded-2xl overflow-hidden transition-all duration-200 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 cursor-pointer"
-        >
-          <img
-            src="{{ asset('images/about-us/about-us-3.jpeg') }}"
-            alt="Tahfidz Qur'an"
-            class="w-full h-48 sm:w-2/5 sm:h-auto object-cover"
-          />
-          <div class="w-full sm:w-3/5 p-5 sm:p-8 flex flex-col justify-center">
-            <h3
-              class="font-josefin-sans font-semibold text-xl sm:text-2xl mb-2 sm:mb-3"
-            >
-              Tahfidz Qur'an
-            </h3>
-            <p class="text-sm sm:text-base text-gray-600 leading-6 sm:leading-7">Program hafalan Al-Qur'an intensif yang dirancang untuk anak-anak dan santri dengan metode talaqqi langsung dari ustadz berpengalaman. Setiap santri dibimbing secara personal untuk memperkuat makhraj, tajwid, dan kelancaran hafalan hingga 30 juz.</p>
-          </div>
-        </div>
-
-        <div
-          class="flex flex-col sm:flex-row border border-gray-200 rounded-2xl overflow-hidden transition-all duration-200 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 cursor-pointer"
-        >
-          <img
-            src="{{ asset('images/about-us/about-us-4.jpeg') }}"
-            alt="Tadabur Alam"
-            class="w-full h-48 sm:w-2/5 sm:h-auto object-cover"
-          />
-          <div class="w-full sm:w-3/5 p-5 sm:p-8 flex flex-col justify-center">
-            <h3
-              class="font-josefin-sans font-semibold text-xl sm:text-2xl mb-2 sm:mb-3"
-            >
-              Tadabur Alam
-            </h3>
-            <p class="text-sm sm:text-base text-gray-600 leading-6 sm:leading-7">Kegiatan tadabur alam mengajak santri mendekatkan diri kepada Allah melalui refleksi dan penghayatan tanda-tanda kebesaran-Nya di alam semesta. Melalui program ini, santri membangun keterhubungan spiritual sekaligus mempererat ukhuwah antar sesama.</p>
-          </div>
-        </div>
-
-        <div
-          class="flex flex-col sm:flex-row border border-gray-200 rounded-2xl overflow-hidden transition-all duration-200 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 cursor-pointer"
-        >
-          <img
-            src="{{ asset('images/about-us/about-us-5.jpeg') }}"
-            alt="Fiqh Ibadah"
-            class="w-full h-48 sm:w-2/5 sm:h-auto object-cover"
-          />
-          <div class="w-full sm:w-3/5 p-5 sm:p-8 flex flex-col justify-center">
-            <h3
-              class="font-josefin-sans font-semibold text-xl sm:text-2xl mb-2 sm:mb-3"
-            >
-              Fiqh Ibadah
-            </h3>
-            <p class="text-sm sm:text-base text-gray-600 leading-6 sm:leading-7">Pembelajaran fiqh ibadah yang membimbing santri memahami tata cara ibadah sesuai syariat secara mendalam dan benar. Materi mencakup thaharah, shalat, puasa, zakat, dan ibadah harian lainnya agar santri mampu beribadah dengan penuh kesadaran dan keyakinan.</p>
-          </div>
-        </div>
-
-        <div
-          class="flex flex-col sm:flex-row border border-gray-200 rounded-2xl overflow-hidden transition-all duration-200 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 cursor-pointer"
-        >
+        @forelse ($activities as $activity)
           <div
-            class="w-full h-40 sm:w-2/5 sm:h-auto bg-gray-100 flex items-center justify-center"
+            class="flex flex-col sm:flex-row border border-gray-200 rounded-2xl overflow-hidden transition-all duration-200 hover:border-green-400 hover:shadow-lg hover:shadow-green-100 cursor-pointer activity-card"
+            data-name="{{ $activity->name }}"
+            data-date="{{ $activity->activity_date->translatedFormat('d F Y') }}"
+            data-description="{{ $activity->description }}"
+            data-image="{{ $activity->proof_of_activity ? asset('storage/' . $activity->proof_of_activity) : '' }}"
           >
-            <span
-              class="text-gray-400 font-semibold text-base sm:text-lg tracking-widest uppercase"
-              >Coming Soon</span
-            >
+            @if ($activity->proof_of_activity)
+              <img
+                src="{{ asset('storage/' . $activity->proof_of_activity) }}"
+                alt="{{ $activity->name }}"
+                class="w-full h-48 sm:w-2/5 sm:h-auto object-cover shadow-lg shadow-green-500/50"
+              />
+            @else
+              <div class="w-full h-48 sm:w-2/5 sm:h-auto bg-green-50 flex items-center justify-center">
+                <span class="text-green-300 font-semibold text-base sm:text-lg tracking-widest uppercase">RTQ Ar-Rasyid</span>
+              </div>
+            @endif
+            <div class="w-full sm:w-3/5 p-5 sm:p-8 flex flex-col justify-center">
+              <span class="text-xs text-gray-400 mb-1">{{ $activity->activity_date->translatedFormat('d F Y') }}</span>
+              <h3 class="font-josefin-sans font-semibold text-xl sm:text-2xl mb-2 sm:mb-3">
+                {{ $activity->name }}
+              </h3>
+              <p class="text-sm sm:text-base text-gray-600 leading-6 sm:leading-7">{{ $activity->description }}</p>
+              <span class="mt-4 text-sm font-semibold text-green-600 flex items-center gap-1">
+                Lihat Detail
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </span>
+            </div>
           </div>
-          <div class="w-full sm:w-3/5 p-5 sm:p-8 flex flex-col justify-center">
-            <h3
-              class="font-josefin-sans font-semibold text-xl sm:text-2xl text-gray-400"
-            >
-              Tunggu Kegiatan Lainnya
-            </h3>
-          </div>
-        </div>
+        @empty
+          <div class="text-center text-gray-400 py-12">Belum ada kegiatan.</div>
+        @endforelse
       </div>
     </section>
+
+    {{-- Activity Detail Modal --}}
+    <div id="activity-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+      <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+      <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto z-10">
+        <button id="modal-close" class="absolute top-4 right-4 z-10 bg-white rounded-full p-1.5 shadow hover:bg-gray-100 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+        <div id="modal-image-wrap" class="w-full">
+          <img id="modal-image" src="" alt="" class="w-full h-56 sm:h-72 object-cover rounded-t-2xl" />
+        </div>
+        <div id="modal-placeholder" class="w-full h-40 bg-green-50 rounded-t-2xl hidden items-center justify-center">
+          <span class="text-green-300 font-semibold text-lg tracking-widest uppercase">RTQ Ar-Rasyid</span>
+        </div>
+        <div class="p-6 sm:p-8">
+          <span id="modal-date" class="text-xs text-gray-400 block mb-2"></span>
+          <h2 id="modal-name" class="font-josefin-sans font-bold text-2xl sm:text-3xl text-gray-800 mb-4"></h2>
+          <p id="modal-description" class="text-sm sm:text-base text-gray-600 leading-7"></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const modal = document.getElementById('activity-modal');
+      const modalClose = document.getElementById('modal-close');
+      const modalBackdrop = document.getElementById('modal-backdrop');
+
+      function openModal(data) {
+        document.getElementById('modal-name').textContent = data.name;
+        document.getElementById('modal-date').textContent = data.date;
+        document.getElementById('modal-description').textContent = data.description;
+
+        const imgEl = document.getElementById('modal-image');
+        const imgWrap = document.getElementById('modal-image-wrap');
+        const placeholder = document.getElementById('modal-placeholder');
+
+        if (data.image) {
+          imgEl.src = data.image;
+          imgEl.alt = data.name;
+          imgWrap.classList.remove('hidden');
+          placeholder.classList.add('hidden');
+          placeholder.classList.remove('flex');
+        } else {
+          imgWrap.classList.add('hidden');
+          placeholder.classList.remove('hidden');
+          placeholder.classList.add('flex');
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('.activity-card').forEach(card => {
+        card.addEventListener('click', () => openModal({
+          name: card.dataset.name,
+          date: card.dataset.date,
+          description: card.dataset.description,
+          image: card.dataset.image,
+        }));
+      });
+
+      modalClose.addEventListener('click', closeModal);
+      modalBackdrop.addEventListener('click', closeModal);
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    </script>
   </div>
   <section
     id="donate"
@@ -205,7 +240,7 @@
         <img
           src="{{ asset('images/about-us/about-us-2.jpeg') }}"
           alt="Donasi RTQ Ar-Rasyid"
-          class="w-full h-56 sm:w-6/12 sm:h-80 md:sm:h-96 object-cover rounded-2xl shadow-xl shadow-green-900/40"
+          class="w-full h-56 sm:w-6/12 sm:h-80 md:sm:h-96 object-cover rounded-2xl shadow-lg shadow-green-500/50"
         />
         <div class="w-full sm:w-6/12 text-white">
           <span
@@ -220,13 +255,13 @@
           <p class="text-sm sm:text-base leading-7 text-green-100 mb-8">Setiap rupiah yang Anda donasikan langsung berdampak bagi masa depan santri dhuafa di RTQ Ar-Rasyid. Donasi Anda membiayai kebutuhan pendidikan, operasional pesantren, dan kehidupan sehari-hari para penghafal Al-Qur'an. Bersama, kita wujudkan generasi Qur'ani yang kuat, berakhlak, dan berdaya.</p>
           <div class="flex flex-col lg:flex-row gap-4">
             <a
-              href="{{ route('donations.index') }}"
+              href="#"
               class="inline-block px-6 py-3 bg-green-600 text-gray-50 font-bold rounded-full hover:bg-green-600/90 hover:shadow-lg transition-all duration-200 text-base text-center sm:text-lg"
             >
               Donasi Via WA
             </a>
             <a
-              href="{{ route('donations.index') }}"
+              href="#"
               class="inline-block px-6 py-3 bg-white text-green-700 font-bold rounded-full hover:bg-green-50 hover:shadow-lg transition-all duration-200 text-base text-center sm:text-lg"
             >
               Donasi Langsung

@@ -11,6 +11,7 @@
   </style>
 
   <title>{{ config('app.name', 'Laravel') }}</title>
+  <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}" />
 
   @fonts
 
@@ -2168,22 +2169,17 @@
         </style>
   @endif
 </head>
-
-<body
-  class="flex flex-col min-h-screen p-6 text-[#1b1b18] lg:justify-center lg:py-8 lg:px-16 overflow-x-hidden"
->
-  <!--
+<body className="min-h-screen w-full relative overflow-x-hidden">
   <div
-    class="fixed top-0 right-0 -translate-y-1/4 translate-x-1/4 hidden lg:block lg:w-125 lg:h-125 rounded-full bg-[radial-gradient(circle,rgba(134,239,172,0.35)_0%,transparent_70%)] pointer-events-none z-0"
+    class="fixed inset-0 -z-1"
+    style="background: radial-gradient(125% 125% at 50% 10%, #fff 40%, #cafeda 100%)"
   ></div>
-  <div
-    class="fixed bottom-0 left-0 translate-y-1/3 -translate-x-1/3 hidden lg:block w-20 h-20 lg:w-155 lg:h-155 rounded-full bg-[radial-gradient(circle,rgba(74,222,128,0.2)_0%,transparent_70%)] pointer-events-none z-0"
-  ></div>
-  -->
-  @include ('shared.header')
-  <div id="app container mx-auto flex-1">
-    @yield ('content')
+  <div class="min-h-screen flex flex-col p-6 text-[#1b1b18] lg:justify-center lg:py-8 lg:px-16 relative">
+    @include ('shared.header')
+    <div id="app" class="grow">
+      @yield ('content')
+    </div>
+    @include ('shared.footer')
   </div>
-  @include ('shared.footer')
 </body>
 </html>
