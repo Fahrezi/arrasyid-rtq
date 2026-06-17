@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('donors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
+            $table->string('phone')->nullable();
             $table->enum('type', ['fix', 'non_fix']);
             $table->enum('status', ['active', 'non_active']);
             $table->timestamps();

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Donor extends Model
 {
-    protected $fillable = ['name', 'email', 'type', 'status'];
+    protected $fillable = ['name', 'email', 'phone', 'type', 'status'];
 
     public function donations(): HasMany
     {

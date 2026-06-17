@@ -50,10 +50,11 @@ class DatabaseSeeder extends Seeder
 
         foreach ($activities as $activity) {
             Activity::create([
-                'program_id'    => $program->id,
-                'name'          => $activity['name'],
-                'description'   => $activity['description'],
-                'activity_date' => $activity['activity_date'],
+                'program_id'        => $program->id,
+                'name'              => $activity['name'],
+                'description'       => $activity['description'],
+                'activity_date'     => $activity['activity_date'],
+                'proof_of_activity' => $activity['proof_of_activity'],
             ]);
         }
     }

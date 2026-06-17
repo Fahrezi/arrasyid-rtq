@@ -24,9 +24,12 @@ class DonorResource extends Resource
                 ->label('Nama')
                 ->required()
                 ->maxLength(255),
+            Forms\Components\TextInput::make('phone')
+                ->label('No. HP / WhatsApp')
+                ->tel()
+                ->maxLength(20),
             Forms\Components\TextInput::make('email')
                 ->email()
-                ->required()
                 ->maxLength(255),
             Forms\Components\Select::make('type')
                 ->label('Tipe')
@@ -49,7 +52,8 @@ class DonorResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('email')->searchable(),
+                Tables\Columns\TextColumn::make('phone')->label('No. HP')->searchable(),
+                Tables\Columns\TextColumn::make('email')->searchable()->toggleable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipe')
                     ->badge()
