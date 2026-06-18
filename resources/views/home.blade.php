@@ -1,12 +1,13 @@
 @extends ('layout.app')
 
 @section ('content')
-  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+  <div class="max-w-7xl mx-auto px-2 sm:px-6">
     <section
-      class="flex flex-col items-center text-center justify-center bg-[#f4fff4] bg-[linear-gradient(180deg,#DBFFDB_0%,#F4FFF4_100%)] rounded-2xl border border-green-500 p-6 pt-14 sm:p-12 sm:pt-16 min-h-[30vh] max-sm:max-h-[760px] lg:min-h-[50vh] mt-6 sm:mt-12 relative"
+      id="hero"
+      class="flex flex-col items-center text-center justify-center bg-[#f4fff4] bg-[linear-gradient(180deg,#DBFFDB_0%,#F4FFF4_100%)] rounded-2xl border border-green-500 p-6 pt-14 sm:p-12 sm:pt-16 min-h-[45vh] max-sm:max-h-[760px] lg:min-h-[50vh] mt-6 sm:mt-12 relative"
     >
       <span
-        class="absolute inline-block top-0 left-1/2 -translate-x-1/2 bg-green-500 rounded-b-2xl py-2 px-4 sm:py-4 sm:px-8 text-xs sm:text-base md:text-2xl font-josefin-sans font-semibold text-white border-r border-b border-l border-green-500 shadow-lg shadow-green-500/50/50 uppercase sm:w-auto text-center sm:text-nowrap"
+        class="absolute inline-block top-0 left-1/2 -translate-x-1/2 bg-green-500 rounded-b-2xl py-2 px-4 sm:py-4 sm:px-8 text-xs sm:text-base md:text-2xl font-josefin-sans font-semibold text-white border-r border-b border-l border-green-500 shadow-lg shadow-green-500/50/50 uppercase w-[80%] sm:w-auto text-center sm:text-nowrap"
       >
         Rumah Tahfidz Al-Qur'an Ar-Rasyid Sawah Lunto
       </span>
@@ -235,7 +236,7 @@
     id="donate"
     class="-mx-6 lg:-mx-16 bg-[linear-gradient(135deg,#22c55e_0%,#14532d_100%)] py-14 sm:py-20"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto px-8">
       <div class="flex flex-col sm:flex-row items-center gap-8 sm:gap-12">
         <img
           src="{{ asset('images/about-us/about-us-2.jpeg') }}"
@@ -260,15 +261,174 @@
             >
               Donasi Via WA
             </a>
-            <a
-              href="#"
+            <button
+              id="btn-donate"
+              type="button"
               class="inline-block px-6 py-3 bg-white text-green-700 font-bold rounded-full hover:bg-green-50 hover:shadow-lg transition-all duration-200 text-base text-center sm:text-lg"
             >
               Donasi Langsung
-            </a>
+            </button>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  {{-- Donation Modal --}}
+  <div id="donation-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+    <div id="donation-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg z-10">
+      <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <h2 class="font-josefin-sans font-bold text-xl text-gray-800">Donasi Langsung</h2>
+        <button id="donation-close" class="p-1.5 rounded-full hover:bg-gray-100 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <form id="donation-form" class="p-6 space-y-4">
+        @csrf
+
+        <div id="donation-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3"></div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+          <input type="text" name="name" required placeholder="Masukkan nama Anda"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
+          <input type="tel" name="phone" placeholder="08xxxxxxxxxx"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" name="email" placeholder="email@contoh.com"
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Jumlah Donasi <span class="text-red-500">*</span></label>
+          <div class="grid grid-cols-3 gap-2 mb-2">
+            @foreach ([50000, 100000, 200000, 300000, 500000, 1000000] as $nominal)
+              <button type="button" data-amount="{{ $nominal }}"
+                class="amount-preset px-3 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition">
+                Rp {{ number_format($nominal, 0, ',', '.') }}
+              </button>
+            @endforeach
+          </div>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-gray-500">Rp</span>
+            <input type="number" name="amount" id="amount-input" min="10000" required placeholder="Atau masukkan nominal lain"
+              class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Pesan / Doa (opsional)</label>
+          <textarea name="notes" rows="2" placeholder="Tulis pesan atau doa untuk santri..."
+            class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm resize-none"></textarea>
+        </div>
+
+        <button type="submit" id="donation-submit"
+          class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition duration-200 text-sm flex items-center justify-center gap-2">
+          <span id="submit-text">Lanjutkan ke Pembayaran</span>
+          <svg id="submit-spinner" class="hidden h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Donation modal
+    const donationModal    = document.getElementById('donation-modal');
+    const donationClose    = document.getElementById('donation-close');
+    const donationBackdrop = document.getElementById('donation-backdrop');
+    const donationForm     = document.getElementById('donation-form');
+    const donationError    = document.getElementById('donation-error');
+    const amountInput      = document.getElementById('amount-input');
+
+    document.getElementById('btn-donate').addEventListener('click', () => {
+      donationModal.classList.remove('hidden');
+      donationModal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    });
+
+    function closeDonationModal() {
+      donationModal.classList.add('hidden');
+      donationModal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    donationClose.addEventListener('click', closeDonationModal);
+    donationBackdrop.addEventListener('click', closeDonationModal);
+
+    // Preset amount buttons
+    document.querySelectorAll('.amount-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        amountInput.value = btn.dataset.amount;
+        document.querySelectorAll('.amount-preset').forEach(b => b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50'));
+        btn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
+      });
+    });
+
+    // Form submit
+    donationForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      donationError.classList.add('hidden');
+      const submitBtn  = document.getElementById('donation-submit');
+      const submitText = document.getElementById('submit-text');
+      const spinner    = document.getElementById('submit-spinner');
+
+      submitBtn.disabled = true;
+      submitText.textContent = 'Memproses...';
+      spinner.classList.remove('hidden');
+
+      const formData = new FormData(donationForm);
+
+      try {
+        const res = await fetch('{{ route('donate') }}', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': formData.get('_token') },
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Laravel validation errors (422) return { errors: { field: ['msg'] } }
+          if (data.errors) {
+            const messages = Object.values(data.errors).flat();
+            donationError.textContent = messages.join(' ');
+          } else {
+            donationError.textContent = data.message ?? 'Terjadi kesalahan. Silakan coba lagi.';
+          }
+          donationError.classList.remove('hidden');
+          console.error('Donation error:', data);
+          return;
+        }
+
+        if (data.payment_url) {
+          window.location.href = data.payment_url;
+        } else {
+          donationError.textContent = 'Tidak ada URL pembayaran. Hubungi admin.';
+          donationError.classList.remove('hidden');
+        }
+      } catch {
+        donationError.textContent = 'Koneksi gagal. Periksa internet Anda.';
+        donationError.classList.remove('hidden');
+      } finally {
+        submitBtn.disabled = false;
+        submitText.textContent = 'Lanjutkan ke Pembayaran';
+        spinner.classList.add('hidden');
+      }
+    });
+  </script>
 @endsection

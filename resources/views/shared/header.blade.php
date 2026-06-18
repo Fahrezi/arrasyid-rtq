@@ -53,6 +53,9 @@
         alt="Arrasyid Logo"
         class="h-10 w-auto"
       />
+      <div class="overflow-hidden h-7 flex items-center">
+        <h3 id="nav-section-label" class="font-semibold text-base text-[#1b1b18] transition-transform duration-300 ease-in-out">RTQ Ar-Rasyid</h3>
+      </div>
       <button
         id="hamburger-btn"
         aria-label="Toggle menu"
@@ -113,5 +116,68 @@
     menu.classList.toggle("hidden", isOpen);
     iconOpen.classList.toggle("hidden", !isOpen);
     iconClose.classList.toggle("hidden", isOpen);
+  });
+
+  // Animated section label
+  const sectionMap = {
+    'hero':       'RTQ Ar-Rasyid',
+    'about-us':   'Tentang Kami',
+    'activities': 'Laporan Kegiatan',
+    'donate':     'Donasi',
+  };
+
+  const label     = document.getElementById('nav-section-label');
+  let lastY       = window.scrollY;
+  let current     = 'hero';
+  let animating   = false;
+
+  function slideLabel(nextText) {
+    if (animating || label.textContent === nextText) return;
+    animating = true;
+
+    const scrollingDown = window.scrollY >= lastY;
+    const exitY   = scrollingDown ? '-100%' : '100%';
+    const enterY  = scrollingDown ? '100%'  : '-100%';
+
+    // Slide current out
+    label.style.transform = `translateY(${exitY})`;
+    label.style.opacity   = '0';
+
+    setTimeout(() => {
+      label.textContent     = nextText;
+      label.style.transition = 'none';
+      label.style.transform = `translateY(${enterY})`;
+      label.style.opacity   = '0';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          label.style.transition = 'transform 300ms ease-in-out, opacity 300ms ease-in-out';
+          label.style.transform  = 'translateY(0)';
+          label.style.opacity    = '1';
+          animating = false;
+        });
+      });
+    }, 300);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        if (id !== current) {
+          slideLabel(sectionMap[id] ?? 'RTQ Ar-Rasyid');
+          current = id;
+        }
+      }
+    });
+
+    lastY = window.scrollY;
+  }, { threshold: 0.3 });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    Object.keys(sectionMap).forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
   });
 </script>

@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'pakasir' => [
+        'api_key'  => env('PAKASIR_API_KEY'),
+        'base_url' => env('PAKASIR_BASE_URL', 'https://api.pakasir.com'),
+        'project'  => env('PAKASIR_PROJECT', 'RTQ Ar-Rasyid'),
+    ],
+
 ];
