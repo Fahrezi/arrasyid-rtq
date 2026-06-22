@@ -1,7 +1,13 @@
 {
   "$schema": "https://schema.railpack.com",
   "packages": {
-    "php": "8.4"
+    "php": "8.4",
+    "node": "20"
+  },
+  "steps": {
+    "build": {
+      "commands": ["npm ci", "npm run build"]
+    }
   },
   "buildAptPackages": [
     "bison",
