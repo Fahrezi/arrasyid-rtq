@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Donor;
-use App\Models\PakasirPayment;
+use App\Models\DuitkuPayment;
 use App\Models\Program;
-use App\Services\PakasirService;
+use App\Services\DuitkuService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -14,14 +14,15 @@ use Illuminate\Support\Facades\Log;
 
 class DonationController extends Controller
 {
-    public function store(Request $request, PakasirService $pakasir): JsonResponse
+    public function store(Request $request, DuitkuService $duitku): JsonResponse
     {
         $data = $request->validate([
-            'name'   => 'required|string|max:255',
-            'email'  => 'nullable|email|max:255',
-            'phone'  => 'nullable|string|max:20',
-            'amount' => 'required|integer|min:10000',
-            'notes'  => 'nullable|string|max:1000',
+            'name'           => 'required|string|max:255',
+            'email'          => 'nullable|email|max:255',
+            'phone'          => 'nullable|string|max:20',
+            'amount'         => 'required|integer|min:10000',
+            'notes'          => 'nullable|string|max:1000',
+            'payment_method' => 'required|string|in:BC,M2,BT,OV,DA,SL,VC,I1,BV,M1,A1,LT',
         ]);
 
         $program = Program::where('status', 'active')->first();
@@ -30,18 +31,21 @@ class DonationController extends Controller
             return response()->json(['message' => 'Tidak ada program aktif saat ini.'], 422);
         }
 
+        Log::info('Donation store initiated', [
+            'name'           => $data['name'],
+            'amount'         => $data['amount'],
+            'payment_method' => $data['payment_method'],
+        ]);
+
         try {
-            $result = DB::transaction(function () use ($data, $program, $pakasir) {
-                $donor = Donor::firstOrCreate(
-                    ['email' => $data['email'] ?? null, 'name' => $data['name']],
-                    [
-                        'name'   => $data['name'],
-                        'email'  => $data['email'] ?? null,
-                        'phone'  => $data['phone'] ?? null,
-                        'type'   => 'non_fix',
-                        'status' => 'active',
-                    ]
-                );
+            $result = DB::transaction(function () use ($data, $program, $duitku) {
+                $donor = Donor::create([
+                    'name'   => $data['name'],
+                    'email'  => $data['email'] ?? null,
+                    'phone'  => $data['phone'] ?? null,
+                    'type'   => 'non_fix',
+                    'status' => 'active',
+                ]);
 
                 $donation = Donation::create([
                     'donor_id'       => $donor->id,
@@ -53,27 +57,35 @@ class DonationController extends Controller
                     'notes'          => $data['notes'] ?? null,
                 ]);
 
-                $orderId = PakasirPayment::generateOrderId();
+                $merchantOrderId = DuitkuPayment::generateOrderId();
 
-                $apiResponse = $pakasir->createPayment($orderId, (int) $data['amount'], [
+                $apiResponse = $duitku->createInvoice($merchantOrderId, (int) $data['amount'], [
                     'name'  => $data['name'],
                     'email' => $data['email'] ?? null,
                     'phone' => $data['phone'] ?? null,
+                ], $data['payment_method']);
+
+                DuitkuPayment::create([
+                    'merchant_order_id' => $merchantOrderId,
+                    'donation_id'       => $donation->id,
+                    'amount'            => $data['amount'],
+                    'status'            => 'pending',
+                    'payment_url'       => $apiResponse['paymentUrl'] ?? null,
+                    'va_number'         => $apiResponse['vaNumber'] ?? null,
+                    'qr_string'         => $apiResponse['qrString'] ?? null,
+                    'reference'         => $apiResponse['reference'] ?? null,
                 ]);
 
-                PakasirPayment::create([
-                    'order_id'    => $orderId,
-                    'donation_id' => $donation->id,
-                    'amount'      => $data['amount'],
-                    'project'     => config('services.pakasir.project'),
-                    'status'      => 'pending',
-                    'payment_url' => $apiResponse['payment_url'] ?? null,
-                    'qr_string'   => $apiResponse['qr_string'] ?? null,
-                    'va_number'   => $apiResponse['va_number'] ?? null,
+                Log::info('Duitku invoice created', [
+                    'merchant_order_id' => $merchantOrderId,
+                    'payment_url'       => $apiResponse['paymentUrl'] ?? null,
+                    'reference'         => $apiResponse['reference'] ?? null,
                 ]);
 
-                return $apiResponse['payment_url'] ?? null;
+                return $apiResponse['paymentUrl'] ?? null;
             });
+
+            Log::info('Donation store success', ['payment_url' => $result]);
 
             return response()->json(['payment_url' => $result]);
         } catch (\Throwable $e) {

@@ -2,17 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PakasirPaymentResource\Pages;
-use App\Models\PakasirPayment;
+use App\Filament\Resources\DuitkuPaymentResource\Pages;
+use App\Models\DuitkuPayment;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class PakasirPaymentResource extends Resource
+class DuitkuPaymentResource extends Resource
 {
-    protected static ?string $model = PakasirPayment::class;
+    protected static ?string $model = DuitkuPayment::class;
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
     protected static ?string $navigationLabel = 'Pembayaran';
     protected static ?int $navigationSort = 6;
@@ -20,14 +20,14 @@ class PakasirPaymentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('order_id')->label('Order ID')->disabled(),
+            Forms\Components\TextInput::make('merchant_order_id')->label('Order ID')->disabled(),
             Forms\Components\Select::make('donation_id')
                 ->label('Donasi')
                 ->relationship('donation', 'id')
                 ->searchable()
                 ->preload(),
             Forms\Components\TextInput::make('amount')->label('Jumlah')->numeric()->prefix('Rp')->disabled(),
-            Forms\Components\TextInput::make('project')->label('Proyek')->disabled(),
+            Forms\Components\TextInput::make('reference')->label('Referensi Duitku')->disabled(),
             Forms\Components\Select::make('status')
                 ->options([
                     'pending'   => 'Menunggu',
@@ -46,9 +46,9 @@ class PakasirPaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('order_id')->label('Order ID')->searchable()->sortable(),
+                Tables\Columns\TextColumn::make('merchant_order_id')->label('Order ID')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('amount')->label('Jumlah')->money('IDR')->sortable(),
-                Tables\Columns\TextColumn::make('project')->label('Proyek')->searchable(),
+                Tables\Columns\TextColumn::make('reference')->label('Referensi')->toggleable(),
                 Tables\Columns\TextColumn::make('payment_method')->label('Metode')->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
@@ -69,7 +69,12 @@ class PakasirPaymentResource extends Resource
                 Tables\Columns\TextColumn::make('created_at')->label('Dibuat')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')->options(['pending' => 'Menunggu', 'completed' => 'Selesai', 'failed' => 'Gagal', 'expired' => 'Kedaluwarsa']),
+                Tables\Filters\SelectFilter::make('status')->options([
+                    'pending'   => 'Menunggu',
+                    'completed' => 'Selesai',
+                    'failed'    => 'Gagal',
+                    'expired'   => 'Kedaluwarsa',
+                ]),
             ])
             ->actions([Tables\Actions\ViewAction::make(), Tables\Actions\EditAction::make()])
             ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
@@ -79,9 +84,9 @@ class PakasirPaymentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPakasirPayments::route('/'),
-            'create' => Pages\CreatePakasirPayment::route('/create'),
-            'edit'   => Pages\EditPakasirPayment::route('/{record}/edit'),
+            'index'  => Pages\ListDuitkuPayments::route('/'),
+            'create' => Pages\CreateDuitkuPayment::route('/create'),
+            'edit'   => Pages\EditDuitkuPayment::route('/{record}/edit'),
         ];
     }
 }

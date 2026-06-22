@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Models\DuitkuPayment;
 
 class Donation extends Model
 {
@@ -28,8 +29,8 @@ class Donation extends Model
         return $this->belongsTo(Program::class);
     }
 
-    public function pakasirPayment(): HasOne
+    public function duitkuPayment(): HasOne
     {
-        return $this->hasOne(PakasirPayment::class);
+        return $this->hasOne(DuitkuPayment::class);
     }
 }

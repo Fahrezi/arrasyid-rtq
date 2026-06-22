@@ -35,10 +35,10 @@ return [
         ],
     ],
 
-    'pakasir' => [
-        'api_key'  => env('PAKASIR_API_KEY'),
-        'base_url' => env('PAKASIR_BASE_URL', 'https://api.pakasir.com'),
-        'project'  => env('PAKASIR_PROJECT', 'RTQ Ar-Rasyid'),
+    'duitku' => [
+        'merchant_code' => env('DUITKU_MERCHANT_CODE'),
+        'api_key'       => env('DUITKU_API_KEY'),
+        'base_url'      => env('DUITKU_BASE_URL', 'https://sandbox.duitku.com/webapi'),
     ],
 
 ];

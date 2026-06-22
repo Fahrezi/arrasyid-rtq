@@ -333,6 +333,28 @@
             class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm resize-none"></textarea>
         </div>
 
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran <span class="text-red-500">*</span></label>
+          <div class="grid grid-cols-2 gap-2">
+            @foreach ([
+              'BC' => ['label' => 'BCA Virtual Account',    'icon' => '🏦'],
+              'M2' => ['label' => 'BRI Virtual Account',    'icon' => '🏦'],
+              'BT' => ['label' => 'Mandiri Virtual Account','icon' => '🏦'],
+              'OV' => ['label' => 'OVO',                    'icon' => '💜'],
+              'DA' => ['label' => 'Dana',                   'icon' => '💙'],
+              'SL' => ['label' => 'ShopeePay',              'icon' => '🟠'],
+            ] as $code => $meta)
+              <button type="button" data-method="{{ $code }}"
+                class="payment-method-btn flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition text-left">
+                <span>{{ $meta['icon'] }}</span>
+                <span>{{ $meta['label'] }}</span>
+              </button>
+            @endforeach
+          </div>
+          <input type="hidden" name="payment_method" id="payment-method-input" value="" />
+          <p id="payment-method-error" class="hidden text-xs text-red-500 mt-1">Pilih metode pembayaran.</p>
+        </div>
+
         <button type="submit" id="donation-submit"
           class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition duration-200 text-sm flex items-center justify-center gap-2">
           <span id="submit-text">Lanjutkan ke Pembayaran</span>
@@ -378,11 +400,30 @@
       });
     });
 
+    // Payment method buttons
+    const paymentMethodInput = document.getElementById('payment-method-input');
+    const paymentMethodError = document.getElementById('payment-method-error');
+
+    document.querySelectorAll('.payment-method-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('border-green-500', 'text-green-700', 'bg-green-50'));
+        btn.classList.add('border-green-500', 'text-green-700', 'bg-green-50');
+        paymentMethodInput.value = btn.dataset.method;
+        paymentMethodError.classList.add('hidden');
+      });
+    });
+
     // Form submit
     donationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       donationError.classList.add('hidden');
+
+      if (! paymentMethodInput.value) {
+        paymentMethodError.classList.remove('hidden');
+        return;
+      }
+
       const submitBtn  = document.getElementById('donation-submit');
       const submitText = document.getElementById('submit-text');
       const spinner    = document.getElementById('submit-spinner');
@@ -416,7 +457,8 @@
         }
 
         if (data.payment_url) {
-          window.location.href = data.payment_url;
+          const loadingUrl = `{{ route('donation.loading') }}?redirect=` + encodeURIComponent(data.payment_url);
+          window.location.href = loadingUrl;
         } else {
           donationError.textContent = 'Tidak ada URL pembayaran. Hubungi admin.';
           donationError.classList.remove('hidden');
