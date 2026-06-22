@@ -15,6 +15,16 @@
     "libonig-dev",
     "libsqlite3-dev",
     "libpng-dev",
-    "libjpeg-dev"
+    "libjpeg-dev",
+    "libgd-dev",
+    "libfreetype6-dev",
+    "libwebp-dev",
+    "libxpm-dev",
+    "libsodium-dev",
+    "libreadline-dev",
+    "zlib1g-dev",
+    "libbz2-dev",
+    "libgmp-dev",
+    "libxslt1-dev"
   ]
 }
