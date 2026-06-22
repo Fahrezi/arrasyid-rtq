@@ -25,6 +25,22 @@
     "zlib1g-dev",
     "libbz2-dev",
     "libgmp-dev",
-    "libxslt1-dev"
+    "libxslt1-dev",
+    "libpq-dev"
+  ],
+  "aptPackages": [
+    "libpq5",
+    "libicu72",
+    "libsodium23",
+    "libzip4",
+    "libonig5",
+    "libgd3",
+    "libfreetype6",
+    "libwebp7",
+    "libcurl4",
+    "libxml2",
+    "libreadline8",
+    "libgmp10",
+    "libxslt1.1"
   ]
 }
