@@ -52,7 +52,10 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://k51zqwvw-8000.asse.devtunnels.ms/'),
+    'url' => env('APP_URL', 'http://localhost'),
+
+    'asset_url' => env('ASSET_URL', null),
+
 
     /*
     |--------------------------------------------------------------------------
