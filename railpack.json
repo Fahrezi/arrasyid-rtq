@@ -6,7 +6,7 @@
   },
   "steps": {
     "build": {
-      "commands": ["npm ci --include=dev", "npm run build"]
+      "commands": ["npm install --include=dev", "npm run build"]
     }
   },
   "buildAptPackages": [
