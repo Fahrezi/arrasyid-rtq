@@ -6,7 +6,8 @@
   },
   "steps": {
     "build": {
-      "commands": ["npm install --include=dev", "npm run build"]
+      "commands": ["npm install --include=dev", "npm run build"],
+      "outputs": ["public/build"]
     }
   },
   "buildAptPackages": [
