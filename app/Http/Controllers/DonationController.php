@@ -18,11 +18,11 @@ class DonationController extends Controller
     {
         $data = $request->validate([
             'name'           => 'required|string|max:255',
-            'email'          => 'nullable|email|max:255',
-            'phone'          => 'nullable|string|max:20',
+            'email'          => 'required|email|max:255',
+            'phone'          => 'required|string|max:20',
             'amount'         => 'required|integer|min:10000',
             'notes'          => 'nullable|string|max:1000',
-            'payment_method' => 'required|string|in:BC,M2,BT,OV,DA,SL,VC,I1,BV,M1,A1,LT',
+            'payment_method' => 'required|string|in:BC,M2,BT,BV,I1,M1,OV,DA,SL,LT,VC,A1,OL',
         ]);
 
         $program = Program::where('status', 'active')->first();
@@ -39,20 +39,28 @@ class DonationController extends Controller
 
         try {
             $result = DB::transaction(function () use ($data, $program, $duitku) {
-                $donor = Donor::create([
-                    'name'   => $data['name'],
-                    'email'  => $data['email'] ?? null,
-                    'phone'  => $data['phone'] ?? null,
-                    'type'   => 'non_fix',
-                    'status' => 'active',
-                ]);
+                $donor = Donor::firstOrCreate(
+                    ['email' => $data['email']],
+                    [
+                        'name'   => $data['name'],
+                        'phone'  => $data['phone'],
+                        'type'   => 'non_fix',
+                        'status' => 'active',
+                    ]
+                );
+
+                $paymentMethodLabel = match (true) {
+                    in_array($data['payment_method'], ['BC','M2','BT','BV','I1','M1']) => 'bank_transfer',
+                    $data['payment_method'] === 'A1'                                   => 'cash',
+                    default                                                             => 'e_wallet',
+                };
 
                 $donation = Donation::create([
                     'donor_id'       => $donor->id,
                     'program_id'     => $program->id,
                     'amount'         => $data['amount'],
                     'donated_at'     => now(),
-                    'payment_method' => 'e_wallet',
+                    'payment_method' => $paymentMethodLabel,
                     'status'         => 'pending',
                     'notes'          => $data['notes'] ?? null,
                 ]);

@@ -19,6 +19,10 @@ class DonationResource extends Resource
     protected static ?string $navigationLabel = 'Donasi';
     protected static ?int $navigationSort = 3;
 
+    public static function canEdit($record): bool { return false; }
+    public static function canDelete($record): bool { return false; }
+    public static function canDeleteAny(): bool { return false; }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -134,8 +138,8 @@ class DonationResource extends Resource
                 Tables\Filters\SelectFilter::make('payment_method')->label('Metode')->options(['bank_transfer' => 'Transfer Bank', 'e_wallet' => 'E-Wallet', 'cash' => 'Tunai']),
                 Tables\Filters\SelectFilter::make('program')->relationship('program', 'name'),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+            ->actions([Tables\Actions\ViewAction::make()])
+            ->bulkActions([])
             ->defaultSort('donated_at', 'desc');
     }
 
@@ -144,7 +148,7 @@ class DonationResource extends Resource
         return [
             'index'  => Pages\ListDonations::route('/'),
             'create' => Pages\CreateDonation::route('/create'),
-            'edit'   => Pages\EditDonation::route('/{record}/edit'),
+            'view'   => Pages\ViewDonation::route('/{record}'),
         ];
     }
 }

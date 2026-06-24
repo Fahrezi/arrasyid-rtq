@@ -15,6 +15,7 @@ class DuitkuPaymentResource extends Resource
     protected static ?string $model = DuitkuPayment::class;
     protected static ?string $navigationIcon = 'heroicon-o-credit-card';
     protected static ?string $navigationLabel = 'Pembayaran';
+    protected static bool $shouldRegisterNavigation = false;
     protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form

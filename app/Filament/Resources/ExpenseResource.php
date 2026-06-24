@@ -6,6 +6,7 @@ use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -60,12 +61,55 @@ class ExpenseResource extends Resource
                 Tables\Columns\TextColumn::make('amount')->label('Jumlah')->money('IDR')->sortable(),
                 Tables\Columns\TextColumn::make('expense_date')->label('Tanggal')->date()->sortable(),
                 Tables\Columns\TextColumn::make('description')->label('Deskripsi')->limit(50)->toggleable(),
+                Tables\Columns\IconColumn::make('is_confirmed')
+                    ->label('Status')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-lock-closed')
+                    ->falseIcon('heroicon-o-pencil-square')
+                    ->trueColor('success')
+                    ->falseColor('warning'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('program')->relationship('program', 'name'),
+                Tables\Filters\TernaryFilter::make('is_confirmed')
+                    ->label('Status')
+                    ->trueLabel('Terkonfirmasi')
+                    ->falseLabel('Draft'),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])])
+            ->actions([
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn (Expense $record) => $record->is_confirmed),
+                Tables\Actions\DeleteAction::make()
+                    ->hidden(fn (Expense $record) => $record->is_confirmed),
+                Tables\Actions\Action::make('confirm')
+                    ->label('Konfirmasi')
+                    ->icon('heroicon-o-lock-closed')
+                    ->color('success')
+                    ->hidden(fn (Expense $record) => $record->is_confirmed)
+                    ->requiresConfirmation()
+                    ->modalHeading('Konfirmasi Pengeluaran')
+                    ->modalDescription('Data pengeluaran ini akan dikunci dan tidak dapat diubah atau dihapus. Lanjutkan?')
+                    ->modalSubmitActionLabel('Ya, Konfirmasi')
+                    ->action(function (Expense $record) {
+                        $record->update(['is_confirmed' => true]);
+                        Notification::make()
+                            ->title('Pengeluaran dikonfirmasi')
+                            ->success()
+                            ->send();
+                    }),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->action(function ($records) {
+                            $records->each(function (Expense $record) {
+                                if (! $record->is_confirmed) {
+                                    $record->delete();
+                                }
+                            });
+                        }),
+                ]),
+            ])
             ->defaultSort('expense_date', 'desc');
     }
 

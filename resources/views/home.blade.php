@@ -256,15 +256,16 @@
           <p class="text-sm sm:text-base leading-7 text-green-100 mb-8">Setiap rupiah yang Anda donasikan langsung berdampak bagi masa depan santri dhuafa di RTQ Ar-Rasyid. Donasi Anda membiayai kebutuhan pendidikan, operasional pesantren, dan kehidupan sehari-hari para penghafal Al-Qur'an. Bersama, kita wujudkan generasi Qur'ani yang kuat, berakhlak, dan berdaya.</p>
           <div class="flex flex-col lg:flex-row gap-4">
             <a
-              href="#"
+              href="https://api.whatsapp.com/send?phone=6282170078083&text=Assalamu'alaikum%20Warohmatullohi%20Wabarokatuh%0A%0ASaya%20Mau%20Donasi%20dengan%20data%0A%0ANama%3A%20%0ANominal%3A%0APesan%3A%20%0A%0A"
               class="inline-block px-6 py-3 bg-green-600 text-gray-50 font-bold rounded-full hover:bg-green-600/90 hover:shadow-lg transition-all duration-200 text-base text-center sm:text-lg"
-            >
+              target="_blank" rel="noopener noreferrer"
+              >
               Donasi Via WA
             </a>
             <button
               id="btn-donate"
               type="button"
-              class="inline-block px-6 py-3 bg-white text-green-700 font-bold rounded-full hover:bg-green-50 hover:shadow-lg transition-all duration-200 text-base text-center sm:text-lg"
+              class="inline-block px-6 py-3 bg-white text-green-700 font-bold rounded-full hover:bg-green-50 hover:shadow-lg transition-all duration-200 text-base text-center sm:text-lg cursor-pointer"
             >
               Donasi Langsung
             </button>
@@ -287,27 +288,30 @@
         </button>
       </div>
 
-      <form id="donation-form" class="p-6 space-y-4">
+      <form id="donation-form" class="p-6 space-y-4" novalidate>
         @csrf
 
         <div id="donation-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3"></div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-          <input type="text" name="name" required placeholder="Masukkan nama Anda"
+          <input type="text" id="name-input" name="name" maxlength="255" placeholder="Masukkan nama Anda"
             class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+          <p id="name-error" class="hidden text-xs text-red-500 mt-1"></p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp</label>
-          <input type="tel" name="phone" placeholder="08xxxxxxxxxx"
+          <label class="block text-sm font-medium text-gray-700 mb-1">No. WhatsApp <span class="text-red-500">*</span></label>
+          <input type="tel" id="phone-input" name="phone" placeholder="08xxxxxxxxxx"
             class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+          <p id="phone-error" class="hidden text-xs text-red-500 mt-1"></p>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input type="email" name="email" placeholder="email@contoh.com"
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+          <input type="email" id="email-input" name="email" placeholder="email@contoh.com"
             class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm" />
+          <p id="email-error" class="hidden text-xs text-red-500 mt-1"></p>
         </div>
 
         <div>
@@ -328,29 +332,64 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Pesan / Doa (opsional)</label>
-          <textarea name="notes" rows="2" placeholder="Tulis pesan atau doa untuk santri..."
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-sm font-medium text-gray-700">Pesan / Doa (opsional)</label>
+            <span id="notes-counter" class="text-xs text-gray-400">0 / 200</span>
+          </div>
+          <textarea id="notes-input" name="notes" rows="2" maxlength="200" placeholder="Tulis pesan atau doa untuk santri..."
             class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 transition text-sm resize-none"></textarea>
+          <p id="notes-error" class="hidden text-xs text-red-500 mt-1">Pesan maksimal 200 karakter.</p>
         </div>
 
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Metode Pembayaran <span class="text-red-500">*</span></label>
-          <div class="grid grid-cols-2 gap-2">
+
+          <p class="text-xs text-gray-400 mb-1.5">Virtual Account</p>
+          <div class="grid grid-cols-3 gap-2 mb-3">
             @foreach ([
-              'BC' => ['label' => 'BCA Virtual Account',    'icon' => '🏦'],
-              'M2' => ['label' => 'BRI Virtual Account',    'icon' => '🏦'],
-              'BT' => ['label' => 'Mandiri Virtual Account','icon' => '🏦'],
-              'OV' => ['label' => 'OVO',                    'icon' => '💜'],
-              'DA' => ['label' => 'Dana',                   'icon' => '💙'],
-              'SL' => ['label' => 'ShopeePay',              'icon' => '🟠'],
-            ] as $code => $meta)
+              'BC' => 'BCA VA',
+              'M2' => 'Mandiri VA',
+              'BT' => 'Permata VA',
+              'I1' => 'BNI VA',
+              'BV' => 'BSI VA',
+              'M1' => 'Maybank VA',
+            ] as $code => $label)
               <button type="button" data-method="{{ $code }}"
-                class="payment-method-btn flex items-center gap-2 px-3 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition text-left">
-                <span>{{ $meta['icon'] }}</span>
-                <span>{{ $meta['label'] }}</span>
+                class="payment-method-btn px-2 py-2 rounded-xl border border-gray-200 text-xs font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition text-center">
+                {{ $label }}
               </button>
             @endforeach
           </div>
+
+          <p class="text-xs text-gray-400 mb-1.5">E-Wallet</p>
+          <div class="grid grid-cols-4 gap-2 mb-3">
+            @foreach ([
+              'OV' => 'OVO',
+              'DA' => 'DANA',
+              'SL' => 'ShopeePay',
+              'LT' => 'LinkAja',
+            ] as $code => $label)
+              <button type="button" data-method="{{ $code }}"
+                class="payment-method-btn px-2 py-2 rounded-xl border border-gray-200 text-xs font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition text-center">
+                {{ $label }}
+              </button>
+            @endforeach
+          </div>
+
+          <p class="text-xs text-gray-400 mb-1.5">Lainnya</p>
+          <div class="grid grid-cols-3 gap-2">
+            @foreach ([
+              'OL' => 'QRIS',
+              'VC' => 'Kartu Kredit',
+              'A1' => 'Alfamart',
+            ] as $code => $label)
+              <button type="button" data-method="{{ $code }}"
+                class="payment-method-btn px-2 py-2 rounded-xl border border-gray-200 text-xs font-medium text-gray-600 hover:border-green-400 hover:text-green-700 hover:bg-green-50 transition text-center">
+                {{ $label }}
+              </button>
+            @endforeach
+          </div>
+
           <input type="hidden" name="payment_method" id="payment-method-input" value="" />
           <p id="payment-method-error" class="hidden text-xs text-red-500 mt-1">Pilih metode pembayaran.</p>
         </div>
@@ -413,11 +452,85 @@
       });
     });
 
+    // Field validation helpers
+    const nameInput  = document.getElementById('name-input');
+    const nameError  = document.getElementById('name-error');
+    const phoneInput = document.getElementById('phone-input');
+    const phoneError = document.getElementById('phone-error');
+    const emailInput = document.getElementById('email-input');
+    const emailError = document.getElementById('email-error');
+    const notesInput   = document.getElementById('notes-input');
+    const notesCounter = document.getElementById('notes-counter');
+    const notesError   = document.getElementById('notes-error');
+
+    const phoneRegex = /^(\+62|62|0)8[0-9]{8,11}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+    function setFieldError(input, errorEl, msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.toggle('hidden', !msg);
+      input.classList.toggle('border-red-400', !!msg);
+      input.classList.toggle('border-gray-300', !msg);
+    }
+
+    function validateName() {
+      const val = nameInput.value.trim();
+      if (!val) { setFieldError(nameInput, nameError, 'Nama lengkap wajib diisi.'); return false; }
+      if (val.length < 2) { setFieldError(nameInput, nameError, 'Nama minimal 2 karakter.'); return false; }
+      setFieldError(nameInput, nameError, '');
+      return true;
+    }
+
+    function validatePhone() {
+      const val = phoneInput.value.trim();
+      if (!val) { setFieldError(phoneInput, phoneError, 'No. WhatsApp wajib diisi.'); return false; }
+      if (!phoneRegex.test(val)) { setFieldError(phoneInput, phoneError, 'Format tidak valid. Contoh: 08123456789'); return false; }
+      setFieldError(phoneInput, phoneError, '');
+      return true;
+    }
+
+    function validateEmail() {
+      const val = emailInput.value.trim();
+      if (!val) { setFieldError(emailInput, emailError, 'Email wajib diisi.'); return false; }
+      if (!emailRegex.test(val)) { setFieldError(emailInput, emailError, 'Format email tidak valid.'); return false; }
+      setFieldError(emailInput, emailError, '');
+      return true;
+    }
+
+    nameInput.addEventListener('blur', validateName);
+    nameInput.addEventListener('input', () => { if (!nameError.classList.contains('hidden')) validateName(); });
+    phoneInput.addEventListener('blur', validatePhone);
+    emailInput.addEventListener('blur', validateEmail);
+    phoneInput.addEventListener('input', () => { if (!phoneError.classList.contains('hidden')) validatePhone(); });
+    emailInput.addEventListener('input', () => { if (!emailError.classList.contains('hidden')) validateEmail(); });
+
+    // Notes character counter
+    notesInput.addEventListener('input', () => {
+      const len = notesInput.value.length;
+      notesCounter.textContent = `${len} / 200`;
+      notesCounter.classList.toggle('text-red-500', len >= 180);
+      notesCounter.classList.toggle('text-gray-400', len < 180);
+      notesError.classList.toggle('hidden', len <= 200);
+    });
+
     // Form submit
     donationForm.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       donationError.classList.add('hidden');
+
+      const nameOk   = validateName();
+      const phoneOk  = validatePhone();
+      const emailOk  = validateEmail();
+      const amountVal = amountInput.value;
+
+      if (!nameOk || !phoneOk || !emailOk) return;
+
+      if (!amountVal || Number(amountVal) < 10000) {
+        donationError.textContent = 'Jumlah donasi minimal Rp 10.000.';
+        donationError.classList.remove('hidden');
+        return;
+      }
 
       if (! paymentMethodInput.value) {
         paymentMethodError.classList.remove('hidden');

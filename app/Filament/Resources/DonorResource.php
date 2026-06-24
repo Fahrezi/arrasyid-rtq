@@ -32,18 +32,25 @@ class DonorResource extends Resource
                 ->email()
                 ->maxLength(255),
             Forms\Components\Select::make('type')
-                ->label('Tipe')
+                ->label('Tipe Donatur')
                 ->options([
-                    'fix'     => 'Tetap',
+                    'fix'     => 'Tetap (Rutin)',
                     'non_fix' => 'Tidak Tetap',
                 ])
+                ->default('non_fix')
                 ->required(),
             Forms\Components\Select::make('status')
+                ->label('Status')
                 ->options([
                     'active'     => 'Aktif',
                     'non_active' => 'Tidak Aktif',
                 ])
+                ->default('active')
                 ->required(),
+            Forms\Components\Textarea::make('notes')
+                ->label('Catatan')
+                ->rows(2)
+                ->columnSpanFull(),
         ]);
     }
 
@@ -57,20 +64,32 @@ class DonorResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipe')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state === 'fix' ? 'Tetap' : 'Tidak Tetap')
+                    ->formatStateUsing(fn ($state) => $state === 'fix' ? 'Tetap (Rutin)' : 'Tidak Tetap')
                     ->color(fn ($state) => $state === 'fix' ? 'success' : 'warning'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state === 'active' ? 'Aktif' : 'Tidak Aktif')
                     ->color(fn ($state) => $state === 'active' ? 'success' : 'danger'),
+                Tables\Columns\TextColumn::make('donations_count')
+                    ->label('Total Donasi')
+                    ->counts('donations')
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\TextColumn::make('created_at')->label('Dibuat')->dateTime()->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')->options(['fix' => 'Tetap', 'non_fix' => 'Tidak Tetap']),
+                Tables\Filters\SelectFilter::make('type')->label('Tipe')->options(['fix' => 'Tetap (Rutin)', 'non_fix' => 'Tidak Tetap']),
                 Tables\Filters\SelectFilter::make('status')->options(['active' => 'Aktif', 'non_active' => 'Tidak Aktif']),
             ])
-            ->actions([Tables\Actions\EditAction::make()])
-            ->bulkActions([Tables\Actions\BulkActionGroup::make([Tables\Actions\DeleteBulkAction::make()])]);
+            ->actions([
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
     }
 
     public static function getPages(): array
@@ -79,6 +98,7 @@ class DonorResource extends Resource
             'index'  => Pages\ListDonors::route('/'),
             'create' => Pages\CreateDonor::route('/create'),
             'edit'   => Pages\EditDonor::route('/{record}/edit'),
+            'view'   => Pages\ViewDonor::route('/{record}'),
         ];
     }
 }
