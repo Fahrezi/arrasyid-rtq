@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(xargs cat)",
+      "Bash(mysql -u root -p'0nline_kan_Arrasyiid' arrasyid_rtq -e \"DESCRIBE users;\")"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -12,11 +18,6 @@
           }
         ]
       }
-    ]
-  },
-  "permissions": {
-    "allow": [
-      "Bash(xargs cat)"
     ]
   }
 }

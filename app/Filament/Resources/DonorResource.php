@@ -17,6 +17,8 @@ class DonorResource extends Resource
     protected static ?string $navigationLabel = 'Donatur';
     protected static ?int $navigationSort = 1;
 
+    public static function canCreate(): bool { return false; }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -96,7 +98,6 @@ class DonorResource extends Resource
     {
         return [
             'index'  => Pages\ListDonors::route('/'),
-            'create' => Pages\CreateDonor::route('/create'),
             'edit'   => Pages\EditDonor::route('/{record}/edit'),
             'view'   => Pages\ViewDonor::route('/{record}'),
         ];

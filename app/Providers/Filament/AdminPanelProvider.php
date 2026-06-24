@@ -26,7 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('dashboard-arrasyiid')
-            ->login()
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->favicon(asset('images/logo.png'))
             ->brandName('Login Admin')
             ->brandLogo(asset('images/logo.png'))

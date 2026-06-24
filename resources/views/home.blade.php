@@ -278,7 +278,7 @@
   {{-- Donation Modal --}}
   <div id="donation-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
     <div id="donation-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg z-10">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto z-10">
       <div class="flex items-center justify-between px-6 py-5 border-b border-gray-100">
         <h2 class="font-josefin-sans font-bold text-xl text-gray-800">Donasi Langsung</h2>
         <button id="donation-close" class="p-1.5 rounded-full hover:bg-gray-100 transition">
@@ -463,8 +463,8 @@
     const notesCounter = document.getElementById('notes-counter');
     const notesError   = document.getElementById('notes-error');
 
-    const phoneRegex = /^(\+62|62|0)8[0-9]{8,11}$/;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const phoneRegex = /^(\+62|62|0)8[1-9][0-9]{7,10}$/;
+    const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
     function setFieldError(input, errorEl, msg) {
       errorEl.textContent = msg;
@@ -482,7 +482,7 @@
     }
 
     function validatePhone() {
-      const val = phoneInput.value.trim();
+      const val = phoneInput.value.trim().replace(/[\s\-]/g, '');
       if (!val) { setFieldError(phoneInput, phoneError, 'No. WhatsApp wajib diisi.'); return false; }
       if (!phoneRegex.test(val)) { setFieldError(phoneInput, phoneError, 'Format tidak valid. Contoh: 08123456789'); return false; }
       setFieldError(phoneInput, phoneError, '');
@@ -497,12 +497,12 @@
       return true;
     }
 
+    nameInput.addEventListener('input', validateName);
     nameInput.addEventListener('blur', validateName);
-    nameInput.addEventListener('input', () => { if (!nameError.classList.contains('hidden')) validateName(); });
+    phoneInput.addEventListener('input', validatePhone);
     phoneInput.addEventListener('blur', validatePhone);
+    emailInput.addEventListener('input', validateEmail);
     emailInput.addEventListener('blur', validateEmail);
-    phoneInput.addEventListener('input', () => { if (!phoneError.classList.contains('hidden')) validatePhone(); });
-    emailInput.addEventListener('input', () => { if (!emailError.classList.contains('hidden')) validateEmail(); });
 
     // Notes character counter
     notesInput.addEventListener('input', () => {

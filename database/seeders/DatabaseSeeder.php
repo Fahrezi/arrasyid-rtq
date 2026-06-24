@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         User::firstOrCreate(
             ['email' => 'admin@arrasyid.com'],
-            ['name' => 'Admin Arrasyid', 'password' => Hash::make('arrasyid2026!')],
+            ['name' => 'Admin Arrasyid', 'password' => Hash::make('arrasyid2026!'), 'role' => 'super_admin'],
         );
 
         $program = Program::create([

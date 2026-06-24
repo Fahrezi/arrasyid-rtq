@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ExpenseResource\Pages;
 use App\Models\Expense;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -17,6 +18,7 @@ class ExpenseResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-down';
     protected static ?string $navigationLabel = 'Pengeluaran';
     protected static ?int $navigationSort = 4;
+
 
     public static function form(Form $form): Form
     {
@@ -77,30 +79,36 @@ class ExpenseResource extends Resource
                     ->falseLabel('Draft'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->hidden(fn (Expense $record) => $record->is_confirmed),
-                Tables\Actions\DeleteAction::make()
-                    ->hidden(fn (Expense $record) => $record->is_confirmed),
-                Tables\Actions\Action::make('confirm')
-                    ->label('Konfirmasi')
-                    ->icon('heroicon-o-lock-closed')
-                    ->color('success')
-                    ->hidden(fn (Expense $record) => $record->is_confirmed)
-                    ->requiresConfirmation()
-                    ->modalHeading('Konfirmasi Pengeluaran')
-                    ->modalDescription('Data pengeluaran ini akan dikunci dan tidak dapat diubah atau dihapus. Lanjutkan?')
-                    ->modalSubmitActionLabel('Ya, Konfirmasi')
-                    ->action(function (Expense $record) {
-                        $record->update(['is_confirmed' => true]);
-                        Notification::make()
-                            ->title('Pengeluaran dikonfirmasi')
-                            ->success()
-                            ->send();
-                    }),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->hidden(fn (Expense $record) => ! $record->is_confirmed || Filament::auth()->user()?->isSuperAdmin()),
+                    Tables\Actions\EditAction::make()
+                        ->hidden(fn (Expense $record) => $record->is_confirmed && ! Filament::auth()->user()?->isSuperAdmin())
+                        ->color('info'),
+                    Tables\Actions\DeleteAction::make()
+                        ->hidden(fn (Expense $record) => $record->is_confirmed && ! Filament::auth()->user()?->isSuperAdmin()),
+                    Tables\Actions\Action::make('kunci_pengeluaran')
+                        ->label('Konfirmasi')
+                        ->icon('heroicon-o-lock-closed')
+                        ->color('success')
+                        ->hidden(fn (Expense $record) => $record->is_confirmed || ! Filament::auth()->user()?->isSuperAdmin())
+                        ->requiresConfirmation()
+                        ->modalHeading('Konfirmasi Pengeluaran')
+                        ->modalDescription('Data pengeluaran ini akan dikunci dan tidak dapat diubah atau dihapus. Lanjutkan?')
+                        ->modalSubmitActionLabel('Ya, Konfirmasi')
+                        ->action(function (Expense $record) {
+                            $record->update(['is_confirmed' => true]);
+                            Notification::make()
+                                ->title('Pengeluaran dikonfirmasi')
+                                ->success()
+                                ->send();
+                        }),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
+                        ->hidden(fn () => ! Filament::auth()->user()?->isSuperAdmin())
                         ->action(function ($records) {
                             $records->each(function (Expense $record) {
                                 if (! $record->is_confirmed) {
@@ -118,6 +126,7 @@ class ExpenseResource extends Resource
         return [
             'index'  => Pages\ListExpenses::route('/'),
             'create' => Pages\CreateExpense::route('/create'),
+            'view'   => Pages\ViewExpense::route('/{record}'),
             'edit'   => Pages\EditExpense::route('/{record}/edit'),
         ];
     }

@@ -8,6 +8,8 @@ use App\Models\Donor;
 use App\Models\Program;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,9 +21,38 @@ class DonationResource extends Resource
     protected static ?string $navigationLabel = 'Donasi';
     protected static ?int $navigationSort = 3;
 
+    public static function canCreate(): bool { return false; }
     public static function canEdit($record): bool { return false; }
     public static function canDelete($record): bool { return false; }
     public static function canDeleteAny(): bool { return false; }
+
+    protected static function duitkuLabel(?string $code, ?string $fallback = null): string
+    {
+        if ($code) {
+            return match ($code) {
+                'BC'    => 'BCA VA',
+                'M2'    => 'Mandiri VA',
+                'BT'    => 'Permata VA',
+                'I1'    => 'BNI VA',
+                'BV'    => 'BSI VA',
+                'M1'    => 'Maybank VA',
+                'OV'    => 'OVO',
+                'DA'    => 'DANA',
+                'SL'    => 'ShopeePay',
+                'LT'    => 'LinkAja',
+                'OL'    => 'QRIS',
+                'VC'    => 'Kartu Kredit',
+                'A1'    => 'Alfamart',
+                default => $code,
+            };
+        }
+        return match ($fallback) {
+            'bank_transfer' => 'Transfer Bank',
+            'e_wallet'      => 'E-Wallet',
+            'cash'          => 'Tunai',
+            default         => $fallback ?? '-',
+        };
+    }
 
     public static function form(Form $form): Form
     {
@@ -112,12 +143,10 @@ class DonationResource extends Resource
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Metode')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'bank_transfer' => 'Transfer Bank',
-                        'e_wallet'      => 'E-Wallet',
-                        'cash'          => 'Tunai',
-                        default         => $state,
-                    }),
+                    ->formatStateUsing(fn ($state, Donation $record) => static::duitkuLabel(
+                        $record->duitkuPayment?->payment_method,
+                        $state,
+                    )),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn ($state) => match ($state) {
@@ -138,17 +167,62 @@ class DonationResource extends Resource
                 Tables\Filters\SelectFilter::make('payment_method')->label('Metode')->options(['bank_transfer' => 'Transfer Bank', 'e_wallet' => 'E-Wallet', 'cash' => 'Tunai']),
                 Tables\Filters\SelectFilter::make('program')->relationship('program', 'name'),
             ])
+            ->modifyQueryUsing(fn ($query) => $query->with('duitkuPayment'))
             ->actions([Tables\Actions\ViewAction::make()])
             ->bulkActions([])
             ->defaultSort('donated_at', 'desc');
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist->schema([
+            Infolists\Components\Section::make('Informasi Donasi')->schema([
+                Infolists\Components\TextEntry::make('donor.name')->label('Donatur'),
+                Infolists\Components\TextEntry::make('program.name')->label('Program'),
+                Infolists\Components\TextEntry::make('amount')->label('Jumlah')->money('IDR'),
+                Infolists\Components\TextEntry::make('donated_at')->label('Waktu Donasi')->dateTime(),
+                Infolists\Components\TextEntry::make('payment_method')
+                    ->label('Metode Pembayaran')
+                    ->badge()
+                    ->formatStateUsing(fn ($state, Donation $record) => static::duitkuLabel(
+                        $record->duitkuPayment?->payment_method,
+                        $state,
+                    )),
+                Infolists\Components\TextEntry::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'pending'  => 'Menunggu',
+                        'approved' => 'Disetujui',
+                        'rejected' => 'Ditolak',
+                        default    => $state,
+                    })
+                    ->color(fn ($state) => match ($state) {
+                        'pending'  => 'warning',
+                        'approved' => 'success',
+                        default    => 'danger',
+                    }),
+            ])->columns(2),
+            Infolists\Components\Section::make('Detail Pembayaran Duitku')
+                ->schema([
+                    Infolists\Components\TextEntry::make('duitkuPayment.merchant_order_id')->label('Order ID'),
+                    Infolists\Components\TextEntry::make('duitkuPayment.reference')->label('Referensi'),
+                    Infolists\Components\TextEntry::make('duitkuPayment.va_number')->label('No. VA')->placeholder('-'),
+                    Infolists\Components\TextEntry::make('duitkuPayment.completed_at')->label('Selesai')->dateTime()->placeholder('-'),
+                ])
+                ->columns(2)
+                ->visible(fn (Donation $record) => $record->duitkuPayment !== null),
+            Infolists\Components\Section::make('Catatan')->schema([
+                Infolists\Components\TextEntry::make('notes')->label('Pesan / Doa')->placeholder('Tidak ada catatan')->columnSpanFull(),
+            ])->visible(fn (Donation $record) => filled($record->notes)),
+        ]);
+    }
+
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListDonations::route('/'),
-            'create' => Pages\CreateDonation::route('/create'),
-            'view'   => Pages\ViewDonation::route('/{record}'),
+            'index' => Pages\ListDonations::route('/'),
+            'view'  => Pages\ViewDonation::route('/{record}'),
         ];
     }
 }
